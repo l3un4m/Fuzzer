@@ -16,10 +16,11 @@ struct tar_t
     char version[2];              /* 263 */
     char uname[32];               /* 265 */
     char gname[32];               /* 297 */
-    char devmajor[8];             /* 329 */
-    char devminor[8];             /* 337 */
-    char prefix[155];             /* 345 */
-    char padding[12];             /* 500 */
+    char devmajor[8];             /* 329 */ //X
+    char devminor[8];             /* 337 */ //X
+    char prefix[155];             /* 345 */ //X
+    char padding[12];             /* 500 */ //X
+    //Lines marked as X mean that don't need to be fuzzed
 };
 
 /**
