@@ -6,34 +6,21 @@
 
 #define BLOCK_SIZE 512
 
+static struct tar_t header;
 
-// Function to create a tar file with "Hello, World!" content
-void create_tar(const char *filename) {
+// Function to create a tar file using a given header
+void create_tar(struct tar_t *header) {
     FILE *file = fopen("test.tar", "wb");
     if (!file) {
         perror("Failed to create tar file");
         return;
     }
 
-    struct tar_t header;
-    memset(&header, 0, BLOCK_SIZE);
-
-    // Set file metadata
-    snprintf(header.name, sizeof(header.name), "%s", filename);
-    snprintf(header.mode, sizeof(header.mode), "%07o", 0644);
-    snprintf(header.uid, sizeof(header.uid), "%07o", 0);
-    snprintf(header.gid, sizeof(header.gid), "%07o", 0);
-    snprintf(header.size, sizeof(header.size), "%011o", 13); // "Hello, World!" length
-    snprintf(header.mtime, sizeof(header.mtime), "%011o", 0);
-    header.typeflag = '0'; // Regular file
-    strcpy(header.magic, "ustar");
-    strcpy(header.version, "00");
-
-    // Compute and set the checksum
-    calculate_checksum(&header);
+    // Compute and set the checksum for the given header
+    calculate_checksum(header);
 
     // Write header
-    fwrite(&header, 1, BLOCK_SIZE, file);
+    fwrite(header, 1, BLOCK_SIZE, file);
 
     // Write "Hello, World!" content
     const char *content = "Hello, World!";
@@ -52,7 +39,7 @@ void create_tar(const char *filename) {
     fwrite(empty_block, 1, BLOCK_SIZE, file);
 
     fclose(file);
-    printf("Tar file 'test.tar' created successfully with 'Hello, World!' inside!\n");
+    printf("Tar file 'test.tar' created successfully with provided header!\n");
 }
 
 // Function to extract a tar file using the extractor binary
@@ -68,9 +55,61 @@ void extract_tar(const char *tar_filename) {
     }
 }
 
-int main() {
-    create_tar("hello.txt");
+// Function to reset an existing tar header to default values
+void reset_tar_header(struct tar_t *header) {
+    memset(header, 0, BLOCK_SIZE);
+
+    snprintf(header->name, sizeof(header->name), "default.txt");
+    snprintf(header->mode, sizeof(header->mode), "%07o", 0644);
+    snprintf(header->uid, sizeof(header->uid), "%07o", 0);
+    snprintf(header->gid, sizeof(header->gid), "%07o", 0);
+    snprintf(header->size, sizeof(header->size), "%011o", 1024);
+    snprintf(header->mtime, sizeof(header->mtime), "%011o", 0);
+    header->typeflag = '0'; // Regular file
+    strcpy(header->magic, "ustar");
+    strcpy(header->version, "00");
+
+    // Compute and set the checksum
+    calculate_checksum(header);
+}
+
+void fuzz_field(char* field_name, size_t field_size){
+
+    //Empty Values
+    reset_tar_header(&header);
+    snprintf(header.name, sizeof(header.name), "%s", "");
+    create_tar(&header);
     extract_tar("test.tar");
+}
+
+void fuzz_name() { fuzz_field(header.name, sizeof(header.name)); }
+void fuzz_mode() { fuzz_field(header.mode, sizeof(header.mode)); }
+void fuzz_uid() { fuzz_field(header.uid, sizeof(header.uid)); }
+void fuzz_gid() { fuzz_field(header.gid, sizeof(header.gid)); }
+void fuzz_size() { fuzz_field(header.size, sizeof(header.size)); }
+void fuzz_mtime() { fuzz_field(header.mtime, sizeof(header.mtime)); }
+void fuzz_chksum() { fuzz_field(header.chksum, sizeof(header.chksum)); }
+void fuzz_typeflag() { fuzz_field(&header.typeflag, sizeof(header.typeflag)); }
+void fuzz_linkname() { fuzz_field(header.linkname, sizeof(header.linkname)); }
+void fuzz_magic() { fuzz_field(header.magic, sizeof(header.magic)); }
+void fuzz_version() { fuzz_field(header.version, sizeof(header.version)); }
+void fuzz_uname() { fuzz_field(header.uname, sizeof(header.uname)); }
+void fuzz_gname() { fuzz_field(header.gname, sizeof(header.gname)); }
+
+int main() {
+    fuzz_name();
+    fuzz_mode();
+    fuzz_uid();
+    fuzz_gid();
+    fuzz_size();
+    fuzz_mtime();
+    fuzz_chksum();
+    fuzz_typeflag();
+    fuzz_linkname();
+    fuzz_magic();
+    fuzz_version();
+    fuzz_uname();
+    fuzz_gname();
     return 0;
 }
 
