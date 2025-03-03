@@ -1,5 +1,5 @@
 all:
-	gcc -o fuzzer fuzzer.c
+	gcc -o fuzzer *.c
 	./fuzzer
 
 clean:
