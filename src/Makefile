@@ -3,4 +3,4 @@ all:
 	./fuzzer
 
 clean:
-	rm fuzzer hello.txt test.tar
+	rm fuzzer *.tar

@@ -7,14 +7,37 @@
 
 static struct tar_t header;
 
-void fuzz_field(char* field_name, size_t field_size){
-
+void fuzz_field(char* parameter, size_t param_size){
+/*
     //Empty Values
     reset_tar_header(&header);
-    snprintf(header.name, sizeof(header.name), "%s", "");
+    snprintf(parameter, sizeof(param_size), "%s", "");
     create_tar(&header);
     extract_tar("test.tar");
+
+    //Non-Ascii Value
+    unsigned char non_ascii = 0xE2; //First byte of dong
+    reset_tar_header(&header);
+    snprintf(parameter, sizeof(param_size), "%s", &non_ascii);
+    create_tar(&header);
+    extract_tar("test.tar");
+
+    //Non-Numeric Value
+    char non_numeric[] = "computer-sec";
+    reset_tar_header(&header);
+    snprintf(parameter, sizeof(param_size), "%s", &non_numeric);
+    create_tar(&header);
+    extract_tar("test.tar");
+*/
+    //Non-Octal Value
+    reset_tar_header(&header);
+    memset(parameter, '8', param_size - 1);
+    parameter[param_size - 1] = 0;
+    create_tar(&header);
+    extract_tar("test.tar");
+
 }
+
 
 void fuzz_name() { fuzz_field(header.name, sizeof(header.name)); }
 void fuzz_mode() { fuzz_field(header.mode, sizeof(header.mode)); }
