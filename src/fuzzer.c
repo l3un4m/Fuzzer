@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "help.h"
 
@@ -91,6 +92,7 @@ int main(int argc, char* argv[]) {
     fuzz_gname();
 
     results(&t_success);
+    sleep(2); //To make the inginious not go crazy
     return 0;
 }
 
