@@ -18,13 +18,11 @@
  * BONUS (for fun, no additional marks) without modifying this code,
  * compile it and use the executable to restart our computer.
  */
-int extractor(int argc, char* argv[])
+int extractor(char* extractor)
 {
-    if (argc < 2)
-        return -1;
     int rv = 0;
     char cmd[51];
-    strncpy(cmd, argv[1], 25);
+    strncpy(cmd, extractor, 25);
     cmd[26] = '\0';
     strncat(cmd, " archive.tar", 25);
     char buf[33];
@@ -80,7 +78,7 @@ unsigned int calculate_checksum(struct tar_t* entry){
 
 // Function to create a tar file using a given header
 void create_tar(struct tar_t *header) {
-    FILE *file = fopen("test.tar", "wb");
+    FILE *file = fopen("archive.tar", "wb");
     if (!file) {
         perror("Failed to create tar file");
         return;
@@ -139,3 +137,15 @@ void reset_tar_header(struct tar_t *header) {
 
     calculate_checksum(header);
 }
+
+void results(struct test_s *t_suc){
+    printf("\nResults for each Test:\n");
+    printf("Empty Values:%d\n",t_suc->empty_test);
+    printf("Non-Ascii Values:%d\n", t_suc->non_ascii_test);
+    printf("Non-Octal Values:%d\n", t_suc->non_octal_test);
+    printf("Null-Byte Values:%d\n", t_suc->null_byte_test);
+}
+
+
+
+

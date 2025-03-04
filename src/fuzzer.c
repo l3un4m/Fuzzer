@@ -7,6 +7,9 @@
 
 
 static struct tar_t header;
+static struct param_s p_success;
+static struct test_s t_success;
+char* extract_var = "./extractor_x86_64";
 
 void fuzz_param(char* parameter, size_t param_size){
 
@@ -14,33 +17,43 @@ void fuzz_param(char* parameter, size_t param_size){
     reset_tar_header(&header);
     snprintf(parameter, sizeof(param_size), "%s", "");
     create_tar(&header);
-    extract_tar("test.tar");
+    if(extractor(extract_var) == 1){
+        t_success.empty_test++;
+    }
 
     //Non-Ascii Value
     unsigned char non_ascii = 0xE2; //First byte of Vietnamese dong
     snprintf(parameter, sizeof(param_size), "%s", &non_ascii);
     create_tar(&header);
-    extract_tar("test.tar");
+    if(extractor(extract_var) == 1){
+        t_success.non_ascii_test++;
+    }
 
     //Non-Numeric Value
     char non_numeric[] = "computer-sec";
     reset_tar_header(&header);
     snprintf(parameter, sizeof(param_size), "%s", &non_numeric);
     create_tar(&header);
-    extract_tar("test.tar");
+    if(extractor(extract_var) == 1){
+        t_success.non_numeric_test++;
+    }
 
     //Non-Octal Value
     reset_tar_header(&header);
     memset(parameter, '8', param_size - 1);
     parameter[param_size - 1] = 0;
     create_tar(&header);
-    extract_tar("test.tar");
+    if(extractor(extract_var) == 1){
+        t_success.non_octal_test++;
+    }
 
     //Null Byte Value
     reset_tar_header(&header);
     memset(parameter, 0, param_size);
     create_tar(&header);
-    extract_tar("test.tar");
+    if(extractor(extract_var) == 1){
+        t_success.null_byte_test++;
+    }
 
 }
 
@@ -60,6 +73,7 @@ void fuzz_uname()   { fuzz_param(header.uname, sizeof(header.uname)); }
 void fuzz_gname()   { fuzz_param(header.gname, sizeof(header.gname)); }
 
 int main() {
+
     fuzz_name();
     fuzz_mode();
     fuzz_uid();
@@ -73,6 +87,8 @@ int main() {
     fuzz_version();
     fuzz_uname();
     fuzz_gname();
+
+    results(&t_success);
     return 0;
 }
 

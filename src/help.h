@@ -22,7 +22,7 @@
     //Lines marked as X mean that don't need to be fuzzed
 };
 
-struct successes{
+struct param_s{
     int name_success;
     int mode_success;
     int uid_success;
@@ -39,10 +39,19 @@ struct successes{
     int end_of_file_success;
 };
 
-int extractor(int argc, char* argv[]);
+struct test_s{
+    int empty_test;
+    int non_ascii_test;
+    int non_numeric_test;
+    int non_octal_test;
+    int null_byte_test;
+};
+
+int extractor(char* extractor);
 unsigned int calculate_checksum(struct tar_t* entry);
 void create_tar(struct tar_t *header);
 void extract_tar(const char *tar_filename);
 void reset_tar_header(struct tar_t *header);
+void results(struct test_s *t_suc);
 
 #endif
