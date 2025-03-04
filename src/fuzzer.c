@@ -9,7 +9,7 @@
 static struct tar_t header;
 static struct param_s p_success;
 static struct test_s t_success;
-char* extract_var = "./extractor_x86_64";
+char* extract_var;
 
 void fuzz_param(char* parameter, size_t param_size){
 
@@ -72,7 +72,9 @@ void fuzz_version() { fuzz_param(header.version, sizeof(header.version)); }
 void fuzz_uname()   { fuzz_param(header.uname, sizeof(header.uname)); }
 void fuzz_gname()   { fuzz_param(header.gname, sizeof(header.gname)); }
 
-int main() {
+int main(int argc, char* argv[]) {
+
+    extract_var = argv[1];
 
     fuzz_name();
     fuzz_mode();
