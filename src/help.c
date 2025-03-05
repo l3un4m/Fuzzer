@@ -114,7 +114,9 @@ void extract_tar(const char *tar_filename) {
 void reset_tar_header(struct tar_t *header) {
     char tar_filename[100];
     snprintf(tar_filename, sizeof(tar_filename), "tarfile_%d.tar", rand() % 1000);
-    char symbolic_link[100] = "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk";
+    char symbolic_link[100];
+    memset(symbolic_link, 'k', sizeof(symbolic_link) - 1);
+    symbolic_link[99] = '\0';
     char padding[8] = "1111111";
 
     memset(header, 0, sizeof(struct tar_t));
@@ -139,11 +141,13 @@ void reset_tar_header(struct tar_t *header) {
 }
 
 void results(struct test_s *t_suc){
-    printf("\nResults for each Test:\n");
-    printf("Empty Values:%d\n",t_suc->empty_test);
-    printf("Non-Ascii Values:%d\n", t_suc->non_ascii_test);
-    printf("Non-Octal Values:%d\n", t_suc->non_octal_test);
-    printf("Null-Byte Values:%d\n", t_suc->null_byte_test);
+    printf("\nResults for each Test\n");
+    printf("Empty:%d\n",t_suc->empty_test);
+    printf("Non-Ascii:%d\n", t_suc->non_ascii_test);
+    printf("Non-Octal:%d\n", t_suc->non_octal_test);
+    printf("Null-Byte:%d\n", t_suc->null_byte_test);
+    printf("No-Null-Byte:%d\n", t_suc->no_null_byte_test);
+    printf("Non-Expected:%d\n", t_suc->non_expected_value_test);
 }
 
 

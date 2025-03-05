@@ -45,6 +45,8 @@ struct test_s{
     int non_numeric_test;
     int non_octal_test;
     int null_byte_test;
+    int no_null_byte_test;
+    int non_expected_value_test;
 };
 
 int extractor(char* extractor);

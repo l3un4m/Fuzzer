@@ -79,6 +79,39 @@ void fuzz_param(char* parameter, size_t param_size){
     }
     else{remove("archive.tar");}
 
+    //Parameter finished with non Null byte
+    reset_tar_header(&header);
+    memset(parameter, '0', param_size);
+    create_tar(&header);
+    if(extractor(extract_var) == 1){
+        t_success.no_null_byte_test++;
+        success_count++;
+        snprintf(new_filename, sizeof(new_filename), "success%d.tar", success_count++);
+        rename("archive.tar", new_filename);
+    }
+    else{remove("archive.tar");}
+
+    //Non-Expected Values
+    char non_expected[] = {'\t', '\r', '\n', '\v', '\f', '\b'};
+
+    for(int i = 0; i < sizeof(non_expected); i++){
+
+        reset_tar_header(&header);
+        memset(parameter, non_expected[i], param_size - 1);
+        create_tar(&header);
+        if(extractor(extract_var) == 1){
+            t_success.non_expected_value_test++;
+            success_count++;
+            snprintf(new_filename, sizeof(new_filename), "success%d.tar", success_count++);
+            rename("archive.tar", new_filename);
+        }
+        else{remove("archive.tar");}
+
+
+
+    }
+
+
 }
 
 
