@@ -76,7 +76,8 @@ unsigned int calculate_checksum(struct tar_t* entry){
     return check;
 }
 
-// Function to create a tar file using a given header
+//  Function to create a tar file using a given header
+//  Takes a pointer to a header struct as argument
 void create_tar(struct tar_t *header) {
     FILE *file = fopen("archive.tar", "wb");
     if (!file) {
@@ -99,21 +100,11 @@ void create_tar(struct tar_t *header) {
 
 }
 
-// Function to extract a tar file using the extractor binary
-void extract_tar(const char *tar_filename) {
-    char command[256];
-    snprintf(command, sizeof(command), "./extractor_x86_64 %s", tar_filename);
-
-    int result = system(command);
-    if (result == -1) {
-        perror("Failed to execute extractor");
-    }
-}
-
-// Function to reset an existing tar header to default values
+//  Function to reset an existing tar header to default values
+//  Takes a pointer to a header struct as argument
 void reset_tar_header(struct tar_t *header) {
     char tar_filename[100];
-    snprintf(tar_filename, sizeof(tar_filename), "tarfile_%d.tar", rand() % 1000);
+    snprintf(tar_filename, sizeof(tar_filename), "%s", "delete.tar"); //Sometimes some residue tars appear
     char symbolic_link[100];
     memset(symbolic_link, 'k', sizeof(symbolic_link) - 1);
     symbolic_link[99] = '\0';
@@ -122,7 +113,7 @@ void reset_tar_header(struct tar_t *header) {
     memset(header, 0, sizeof(struct tar_t));
 
     snprintf(header->name, sizeof(header->name), "%s", tar_filename);
-    snprintf(header->mode, sizeof(header->mode), "07555"); // Read & execute perms
+    snprintf(header->mode, sizeof(header->mode), "07777"); // Read & execute perms
     snprintf(header->uid, sizeof(header->uid), "%s", padding);
     snprintf(header->gid, sizeof(header->gid), "%s", padding);
     snprintf(header->size, sizeof(header->size), "%011o", 512); // Default block size in octal
@@ -140,10 +131,13 @@ void reset_tar_header(struct tar_t *header) {
     calculate_checksum(header);
 }
 
+//  Function that will print the results of our Fuzzer
+//  Takes a pointer to a successful tests struct as argument
 void results(struct test_s *t_suc){
     printf("\nResults for each Test\n");
     printf("Empty:%d\n",t_suc->empty_test);
     printf("Non-Ascii:%d\n", t_suc->non_ascii_test);
+    printf("String:%d\n", t_suc->string_test);
     printf("Non-Octal:%d\n", t_suc->non_octal_test);
     printf("Null-Byte:%d\n", t_suc->null_byte_test);
     printf("No-Null-Byte:%d\n", t_suc->no_null_byte_test);

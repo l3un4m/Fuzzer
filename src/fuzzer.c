@@ -6,19 +6,21 @@
 
 #include "help.h"
 
+//Global Variables
+static struct tar_t header;     //Tar Header
+static struct test_s t_success; //Successful Tests
+char* extract_var;              //Path to the extractor
+int success_count = 0;          //Number of Successful Tests
 
-static struct tar_t header;
-static struct param_s p_success;
-static struct test_s t_success;
-char* extract_var;
-int success_count = 0;
-
+//  Function that fuzz and crash an extractor, inside are dedicated mini-fuzzers
+//  Takes a tar header parameter and it's corresponding size to fuzz
+//  Structure of each test is simillar, reset the global header, fuzz it, create and attempt to extract tar resulting in a crash and if so update the successful tests struct
 void fuzz_param(char* parameter, size_t param_size){
 
-    char new_filename[50];
+    char new_filename[50]; //To rename the successful tars
 
 
-    //Empty Values
+    //Changes parameter to be empty
     reset_tar_header(&header);
     snprintf(parameter, param_size, "%s", "");
     create_tar(&header);
@@ -30,7 +32,7 @@ void fuzz_param(char* parameter, size_t param_size){
     }
     else{remove("archive.tar");}
 
-    //Non-Ascii Value
+    //Changes parameter to only contain a non-ascii character
     unsigned char non_ascii = 0xE2; //First byte of Vietnamese dong
     snprintf(parameter, param_size, "%s", &non_ascii);
     create_tar(&header);
@@ -41,20 +43,20 @@ void fuzz_param(char* parameter, size_t param_size){
         rename("archive.tar", new_filename);
     }
 
-    //Non-Numeric Value
-    char non_numeric[] = "computer-sec";
+    //Changes parameter to contain a string(focused on the header parameters that aren't strings)
+    char string[] = "computer-sec";
     reset_tar_header(&header);
-    snprintf(parameter, param_size, "%s", &non_numeric);
+    snprintf(parameter, param_size, "%s", &string);
     create_tar(&header);
     if(extractor(extract_var) == 1){
-        t_success.non_numeric_test++;
+        t_success.string_test++;
         success_count++;
         snprintf(new_filename, sizeof(new_filename), "success%d.tar", success_count++);
         rename("archive.tar", new_filename);
     }
     else{remove("archive.tar");}
 
-    //Non-Octal Value
+    //Changes parameter to contain a non-octal value (focused on fields that need to have octal values: mode, uid, gid, size and mtime)
     reset_tar_header(&header);
     memset(parameter, '8', param_size - 1);
     parameter[param_size - 1] = 0;
@@ -67,7 +69,7 @@ void fuzz_param(char* parameter, size_t param_size){
     }
     else{remove("archive.tar");}
 
-    //Null Byte Value
+    //Changes parameter to contain NULL values
     reset_tar_header(&header);
     memset(parameter, 0, param_size);
     create_tar(&header);
@@ -79,7 +81,7 @@ void fuzz_param(char* parameter, size_t param_size){
     }
     else{remove("archive.tar");}
 
-    //Parameter finished with non Null byte
+    //Changes parameter to end in a non Null byte
     reset_tar_header(&header);
     memset(parameter, '0', param_size);
     create_tar(&header);
@@ -91,7 +93,7 @@ void fuzz_param(char* parameter, size_t param_size){
     }
     else{remove("archive.tar");}
 
-    //Non-Expected Values
+    //Changes parameter to reserved strings
     char non_expected[] = {'\t', '\r', '\n', '\v', '\f', '\b'};
 
     for(int i = 0; i < sizeof(non_expected); i++){
@@ -114,7 +116,8 @@ void fuzz_param(char* parameter, size_t param_size){
 
 }
 
-
+//  All the next functions have the same purpose: Use the previous fuzzer on each specific parameter
+//  Take as argument the parameter ID and it's size
 void fuzz_name()    { fuzz_param(header.name, sizeof(header.name)); }
 void fuzz_mode()    { fuzz_param(header.mode, sizeof(header.mode)); }
 void fuzz_uid()     { fuzz_param(header.uid, sizeof(header.uid)); }
@@ -129,6 +132,8 @@ void fuzz_version() { fuzz_param(header.version, sizeof(header.version)); }
 void fuzz_uname()   { fuzz_param(header.uname, sizeof(header.uname)); }
 void fuzz_gname()   { fuzz_param(header.gname, sizeof(header.gname)); }
 
+//  Main function, fuzzes globally and shows the results
+//  Takes the patch of the extractor as argument
 int main(int argc, char* argv[]) {
 
     extract_var = argv[1];
@@ -149,7 +154,11 @@ int main(int argc, char* argv[]) {
 
     results(&t_success);
     printf("Successful Tars Created:%d\n", success_count);
+
+    remove("delete.tar"); //For some reason one delete.tar persists when it should be deleted
     sleep(2); //To make the inginious not go crazy
+
+
     return 0;
 }
 
