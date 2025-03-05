@@ -11,33 +11,48 @@ static struct tar_t header;
 static struct param_s p_success;
 static struct test_s t_success;
 char* extract_var;
+int success_count = 0;
 
 void fuzz_param(char* parameter, size_t param_size){
 
+    char new_filename[50];
+
+
     //Empty Values
     reset_tar_header(&header);
-    snprintf(parameter, sizeof(param_size), "%s", "");
+    snprintf(parameter, param_size, "%s", "");
     create_tar(&header);
     if(extractor(extract_var) == 1){
         t_success.empty_test++;
+        success_count++;
+        snprintf(new_filename, sizeof(new_filename), "success%d.tar", success_count++);
+        rename("archive.tar", new_filename);
     }
+    else{remove("archive.tar");}
 
     //Non-Ascii Value
     unsigned char non_ascii = 0xE2; //First byte of Vietnamese dong
-    snprintf(parameter, sizeof(param_size), "%s", &non_ascii);
+    snprintf(parameter, param_size, "%s", &non_ascii);
     create_tar(&header);
     if(extractor(extract_var) == 1){
         t_success.non_ascii_test++;
+        success_count++;
+        snprintf(new_filename, sizeof(new_filename), "success%d.tar", success_count++);
+        rename("archive.tar", new_filename);
     }
 
     //Non-Numeric Value
     char non_numeric[] = "computer-sec";
     reset_tar_header(&header);
-    snprintf(parameter, sizeof(param_size), "%s", &non_numeric);
+    snprintf(parameter, param_size, "%s", &non_numeric);
     create_tar(&header);
     if(extractor(extract_var) == 1){
         t_success.non_numeric_test++;
+        success_count++;
+        snprintf(new_filename, sizeof(new_filename), "success%d.tar", success_count++);
+        rename("archive.tar", new_filename);
     }
+    else{remove("archive.tar");}
 
     //Non-Octal Value
     reset_tar_header(&header);
@@ -46,7 +61,11 @@ void fuzz_param(char* parameter, size_t param_size){
     create_tar(&header);
     if(extractor(extract_var) == 1){
         t_success.non_octal_test++;
+        success_count++;
+        snprintf(new_filename, sizeof(new_filename), "success%d.tar", success_count++);
+        rename("archive.tar", new_filename);
     }
+    else{remove("archive.tar");}
 
     //Null Byte Value
     reset_tar_header(&header);
@@ -54,7 +73,11 @@ void fuzz_param(char* parameter, size_t param_size){
     create_tar(&header);
     if(extractor(extract_var) == 1){
         t_success.null_byte_test++;
+        success_count++;
+        snprintf(new_filename, sizeof(new_filename), "success%d.tar", success_count++);
+        rename("archive.tar", new_filename);
     }
+    else{remove("archive.tar");}
 
 }
 
@@ -92,6 +115,7 @@ int main(int argc, char* argv[]) {
     fuzz_gname();
 
     results(&t_success);
+    printf("Successful Tars Created:%d\n", success_count);
     sleep(2); //To make the inginious not go crazy
     return 0;
 }
