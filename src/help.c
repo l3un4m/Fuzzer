@@ -113,13 +113,13 @@ void reset_tar_header(struct tar_t *header) {
     memset(header, 0, sizeof(struct tar_t));
 
     snprintf(header->name, sizeof(header->name), "%s", tar_filename);
-    snprintf(header->mode, sizeof(header->mode), "07777"); // Read & execute perms
+    snprintf(header->mode, sizeof(header->mode), "07777");
     snprintf(header->uid, sizeof(header->uid), "%s", padding);
     snprintf(header->gid, sizeof(header->gid), "%s", padding);
-    snprintf(header->size, sizeof(header->size), "%011o", 512); // Default block size in octal
-    snprintf(header->mtime, sizeof(header->mtime), "%011lo", time(NULL)); // Current time in octal
+    snprintf(header->size, sizeof(header->size), "%011o", 512);
+    snprintf(header->mtime, sizeof(header->mtime), "%011lo", time(NULL));
 
-    header->typeflag = '1'; // Hard link type
+    header->typeflag = '1';
     snprintf(header->linkname, sizeof(header->linkname), "%s", symbolic_link);
     snprintf(header->magic, sizeof(header->magic), "ustar");
     snprintf(header->version, sizeof(header->version) + 1, "00");
