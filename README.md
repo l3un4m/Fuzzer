@@ -10,9 +10,13 @@ To change the extractor simply update the makefile to have your extractor's path
 ```
 make
 ```
-## Compile and Run
+## Compile and Run with our Extractor
 ```
 make run
+```
+## Run with other Extractor
+```
+./fuzzer ./[PATH TO EXTRACTOR]
 ```
 ## Clean
 ```
