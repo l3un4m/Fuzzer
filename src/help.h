@@ -27,6 +27,9 @@
 struct test_s{
     int empty_test;
     int non_ascii_test;
+    int number_test;
+    int int_min_test;
+    int negative_test;
     int string_test;
     int non_octal_test;
     int null_byte_test;

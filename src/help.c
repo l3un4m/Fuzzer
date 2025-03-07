@@ -137,6 +137,9 @@ void results(struct test_s *t_suc){
     printf("\nResults for each Test\n");
     printf("Empty:%d\n",t_suc->empty_test);
     printf("Non-Ascii:%d\n", t_suc->non_ascii_test);
+    printf("Number:%d\n", t_suc->number_test);
+    printf("INT_MIN:%d\n", t_suc->int_min_test);
+    printf("Negative:%d\n", t_suc->negative_test);
     printf("String:%d\n", t_suc->string_test);
     printf("Non-Octal:%d\n", t_suc->non_octal_test);
     printf("Null-Byte:%d\n", t_suc->null_byte_test);

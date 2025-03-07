@@ -3,6 +3,7 @@
 #include <time.h>
 #include <string.h>
 #include <unistd.h>
+#include <limits.h>
 
 #include "help.h"
 
@@ -33,6 +34,7 @@ void fuzz_param(char* parameter, size_t param_size){
     else{remove("archive.tar");}
 
     //Changes parameter to only contain a non-ascii character
+    reset_tar_header(&header);
     unsigned char non_ascii = 0xE2; //First byte of Vietnamese dong
     snprintf(parameter, param_size, "%s", &non_ascii);
     create_tar(&header);
@@ -42,10 +44,42 @@ void fuzz_param(char* parameter, size_t param_size){
         snprintf(new_filename, sizeof(new_filename), "success%d.tar", success_count++);
         rename("archive.tar", new_filename);
     }
+    //Changes parameter to contain integer value
+    reset_tar_header(&header);
+    snprintf(parameter, param_size, "%d", 1);
+    create_tar(&header);
+    if(extractor(extract_var) == 1){
+        t_success.number_test++;
+        success_count++;
+        snprintf(new_filename, sizeof(new_filename), "success%d.tar", success_count++);
+        rename("archive.tar", new_filename);
+    }
+
+    //Changes parameter to contain the smallest integer value
+    reset_tar_header(&header);
+    snprintf(parameter, param_size, "%d", INT_MIN);
+    create_tar(&header);
+    if(extractor(extract_var) == 1){
+        t_success.int_min_test++;
+        success_count++;
+        snprintf(new_filename, sizeof(new_filename), "success%d.tar", success_count++);
+        rename("archive.tar", new_filename);
+    }
+
+    //Changes parameter to contain negative value
+    reset_tar_header(&header);
+    snprintf(parameter, param_size, "%d", -1);
+    create_tar(&header);
+    if(extractor(extract_var) == 1){
+        t_success.negative_test++;
+        success_count++;
+        snprintf(new_filename, sizeof(new_filename), "success%d.tar", success_count++);
+        rename("archive.tar", new_filename);
+    }
 
     //Changes parameter to contain a string(focused on the header parameters that aren't strings)
-    char string[] = "computer-sec";
     reset_tar_header(&header);
+    char string[] = "computer-sec";
     snprintf(parameter, param_size, "%s", &string);
     create_tar(&header);
     if(extractor(extract_var) == 1){
@@ -94,7 +128,7 @@ void fuzz_param(char* parameter, size_t param_size){
     else{remove("archive.tar");}
 
     //Changes parameter to reserved strings
-    char non_expected[] = {'\t', '\r', '\n', '\v', '\f', '\b'};
+    char non_expected[] = {'\b', '\f', '\n', '\r', '\t', '\v','\"', '\'', ' '};
 
     for(int i = 0; i < sizeof(non_expected); i++){
 
