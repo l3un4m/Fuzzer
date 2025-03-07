@@ -27,7 +27,6 @@ void fuzz_param(char* parameter, size_t param_size){
     create_tar(&header);
     if(extractor(extract_var) == 1){
         t_success.empty_test++;
-        success_count++;
         snprintf(new_filename, sizeof(new_filename), "success_%d.tar", success_count++);
         rename("archive.tar", new_filename);
     }
@@ -40,7 +39,6 @@ void fuzz_param(char* parameter, size_t param_size){
     create_tar(&header);
     if(extractor(extract_var) == 1){
         t_success.non_ascii_test++;
-        success_count++;
         snprintf(new_filename, sizeof(new_filename), "success_%d.tar", success_count++);
         rename("archive.tar", new_filename);
     }
@@ -50,7 +48,6 @@ void fuzz_param(char* parameter, size_t param_size){
     create_tar(&header);
     if(extractor(extract_var) == 1){
         t_success.number_test++;
-        success_count++;
         snprintf(new_filename, sizeof(new_filename), "success_%d.tar", success_count++);
         rename("archive.tar", new_filename);
     }
@@ -61,7 +58,6 @@ void fuzz_param(char* parameter, size_t param_size){
     create_tar(&header);
     if(extractor(extract_var) == 1){
         t_success.int_min_test++;
-        success_count++;
         snprintf(new_filename, sizeof(new_filename), "success_%d.tar", success_count++);
         rename("archive.tar", new_filename);
     }
@@ -72,7 +68,6 @@ void fuzz_param(char* parameter, size_t param_size){
     create_tar(&header);
     if(extractor(extract_var) == 1){
         t_success.negative_test++;
-        success_count++;
         snprintf(new_filename, sizeof(new_filename), "success_%d.tar", success_count++);
         rename("archive.tar", new_filename);
     }
@@ -84,7 +79,6 @@ void fuzz_param(char* parameter, size_t param_size){
     create_tar(&header);
     if(extractor(extract_var) == 1){
         t_success.string_test++;
-        success_count++;
         snprintf(new_filename, sizeof(new_filename), "success_%d.tar", success_count++);
         rename("archive.tar", new_filename);
     }
@@ -97,7 +91,6 @@ void fuzz_param(char* parameter, size_t param_size){
     create_tar(&header);
     if(extractor(extract_var) == 1){
         t_success.non_octal_test++;
-        success_count++;
         snprintf(new_filename, sizeof(new_filename), "success_%d.tar", success_count++);
         rename("archive.tar", new_filename);
     }
@@ -109,7 +102,6 @@ void fuzz_param(char* parameter, size_t param_size){
     create_tar(&header);
     if(extractor(extract_var) == 1){
         t_success.null_byte_test++;
-        success_count++;
         snprintf(new_filename, sizeof(new_filename), "success_%d.tar", success_count++);
         rename("archive.tar", new_filename);
     }
@@ -121,7 +113,6 @@ void fuzz_param(char* parameter, size_t param_size){
     create_tar(&header);
     if(extractor(extract_var) == 1){
         t_success.no_null_byte_test++;
-        success_count++;
         snprintf(new_filename, sizeof(new_filename), "success_%d.tar", success_count++);
         rename("archive.tar", new_filename);
     }
@@ -137,7 +128,6 @@ void fuzz_param(char* parameter, size_t param_size){
         create_tar(&header);
         if(extractor(extract_var) == 1){
             t_success.non_expected_value_test++;
-            success_count++;
             snprintf(new_filename, sizeof(new_filename), "success_%d.tar", success_count++);
             rename("archive.tar", new_filename);
         }
