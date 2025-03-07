@@ -188,9 +188,7 @@ int main(int argc, char* argv[]) {
 
     results(&t_success);
     printf("Successful Tars Created:%d\n", success_count);
-
     remove("delete.tar"); //For some reason one delete.tar persists when it should be deleted
-    sleep(2); //To make the inginious not go crazy
 
 
     return 0;
