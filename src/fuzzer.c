@@ -28,7 +28,7 @@ void fuzz_param(char* parameter, size_t param_size){
     if(extractor(extract_var) == 1){
         t_success.empty_test++;
         success_count++;
-        snprintf(new_filename, sizeof(new_filename), "success%d.tar", success_count++);
+        snprintf(new_filename, sizeof(new_filename), "success_%d.tar", success_count++);
         rename("archive.tar", new_filename);
     }
     else{remove("archive.tar");}
